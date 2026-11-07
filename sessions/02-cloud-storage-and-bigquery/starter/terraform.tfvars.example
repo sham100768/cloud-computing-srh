@@ -1,0 +1,2 @@
+# Copy to terraform.tfvars and set your own project ID.
+project_id = "cc-yourname-123456"

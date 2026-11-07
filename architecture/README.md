@@ -1,0 +1,3 @@
+# Reference architecture
+
+TODO: diagram.

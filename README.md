@@ -5,9 +5,10 @@ Over five weeks you build a freight-analytics data platform on Google Cloud, lay
 Sessions run 16:30–19:00 in seminar room 1.4.
 
 ## Start here
-1. [Set up Google Cloud](setup/gcp.md)
-2. [Set up Databricks Free Edition](setup/databricks.md)
-3. Fork this repo into your team's repo once teams form in session 3.
+1. Read the [course overview](COURSE_OVERVIEW.md)
+2. [Set up Google Cloud](setup/gcp.md)
+3. [Set up Databricks Free Edition](setup/databricks.md)
+4. Fork this repo into your team's repo once teams form in session 3.
 
 ## Schedule
 | # | Date | Session |

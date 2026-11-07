@@ -13,7 +13,7 @@ Sessions run 16:30–19:00 in seminar room 1.4.
 ## Schedule
 | # | Date | Session |
 |---|---|---|
-| 01 | 2026-11-16 | [From servers to the cloud](sessions/01-from-servers-to-the-cloud) |
+| 01 | 2026-11-16 | [Cloud architecture and GCP fundamentals](sessions/01-cloud-architecture-and-gcp-fundamentals) |
 | 02 | 2026-11-18 | [Storing data in the cloud](sessions/02-storing-data-in-the-cloud) |
 | 03 | 2026-11-20 | [Architecture patterns: Lambda vs Kappa](sessions/03-architecture-patterns-lambda-vs-kappa) |
 | 04 | 2026-11-23 | [Docker and Kubernetes on GKE](sessions/04-docker-and-kubernetes-on-gke) |

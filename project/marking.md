@@ -4,7 +4,6 @@
 |---|---|
 | Attendance | 10% |
 | Workshop checkpoints | 10% |
-| The build | 30% |
-| The redesign | 15% |
-| Peer rating | 10% |
-| The board (individual) | 25% |
+| Team project (build and redesign) | 45% |
+| Peer rating: the other teams score each presentation at the board | 10% |
+| Individual performance at the board: questions on your part and your AI use | 25% |

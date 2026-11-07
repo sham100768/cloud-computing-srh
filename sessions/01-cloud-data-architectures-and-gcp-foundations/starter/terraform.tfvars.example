@@ -1,0 +1,4 @@
+# Copy this file to terraform.tfvars and fill in your own values.
+# terraform.tfvars is ignored by git, so your values stay on your machine.
+project_id      = "cc-yourname-123456"
+neighbour_email = "your.neighbour@gmail.com"

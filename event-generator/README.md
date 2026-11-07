@@ -33,30 +33,30 @@ cd ~/cloud-computing-srh/event-generator
 
 The commands below only work from this folder.
 
-**3. Generate 30 days of data.**
+**3. Generate a month of data.** This makes all of October 2026 in a `freight-data` folder in your home directory:
 
 ```bash
-python3 -m generator batch --start 2026-10-01 --days 30 --out data
+python3 -m generator batch --start 2026-10-01 --days 31 --out ~/freight-data
 ```
 
-It finishes in a few seconds and prints:
+It finishes in a few seconds and prints the folder and how many rows it wrote:
 
 ```
-Wrote 30 days to data/: 13680 rates, 1216 schedules, 1102 bookings
+Wrote 31 days to /home/<you>/freight-data/: 14136 rates, 1261 schedules, 1140 bookings
 ```
 
 **4. Look at what you made.**
 
 ```bash
-ls data
-ls data/rates | head -3
-head -3 data/rates/date=2026-10-01/rates.csv
+ls ~/freight-data
+ls ~/freight-data/rates | head -3
+head -3 ~/freight-data/rates/date=2026-10-01/rates.csv
 ```
 
-You get three folders with one CSV per day in each, 90 files and about 2 MB in total:
+You get three folders with one CSV per day in each, 93 files and about 2 MB in total:
 
 ```
-data/
+freight-data/
   rates/date=2026-10-01/rates.csv
   rates/date=2026-10-02/rates.csv
   ...
@@ -68,12 +68,12 @@ data/
 
 The `date=` folder names are a convention BigQuery and Spark understand: they read the date from the path, so a query for one day only needs to read that day's files.
 
-**5. Upload the files to your bucket.** You do this in session 2. It copies everything into the `-raw` bucket you created with Terraform in session 1:
+**5. Upload the files to your bucket.** You do this in session 2. It copies the three folders to the top of the `-raw` bucket you created with Terraform in session 1, which is where session 2's `load.sh` looks for them:
 
 ```bash
 PROJECT_ID=$(gcloud config get-value project)
-gcloud storage cp --recursive data "gs://${PROJECT_ID}-raw/"
-gcloud storage ls "gs://${PROJECT_ID}-raw/data/"
+gcloud storage cp -r ~/freight-data/* "gs://${PROJECT_ID}-raw/"
+gcloud storage ls "gs://${PROJECT_ID}-raw/rates/" | head
 ```
 
 ### Everyone gets the same data
@@ -90,13 +90,71 @@ To change what you generate:
 
 Running the command again overwrites any day that already exists, so it is safe to repeat.
 
+The session 2 workshop's row counts assume the command in step 3 exactly. If you change the seed or the dates, your counts will differ from the workshop's.
+
 ## What's in the files
 
-| Dataset | One row is | Key columns |
+| Dataset | One row is |
+|---|---|
+| `rates` | a carrier's price on one lane, for one container type or weight break, contract type and day |
+| `schedules` | a sailing or flight planned to leave that day, with what actually happened |
+| `bookings` | one shipment a shipper booked that day |
+
+Every column, in the order it appears in the CSV:
+
+### `rates`
+
+| Column | Example | What it is |
 |---|---|---|
-| `rates` | a carrier's price on one lane, for one container type or weight break, contract type and day | `rate_date`, `mode`, `contract_type`, `origin`, `destination`, `carrier_code`, `equipment`, `weight_break`, `rate_usd`, `unit` |
-| `schedules` | a sailing or flight planned to leave that day, with what actually happened | `schedule_id`, `carrier_code`, `planned_departure`, `planned_arrival`, `actual_departure`, `actual_arrival` |
-| `bookings` | one shipment a shipper booked that day | `shipment_id`, `shipper_id`, `carrier_code`, `quantity`, `unit_rate_usd`, `total_cost_usd`, `schedule_id` |
+| `rate_date` | `2026-10-01` | the day the price applies |
+| `mode` | `OCEAN` | `OCEAN` or `AIR` |
+| `contract_type` | `spot` | `spot` or `long_term`; air is always `spot` |
+| `origin` | `CNSHA` | port (UN/LOCODE) or airport (IATA) code |
+| `destination` | `NLRTM` | port or airport code |
+| `trade_lane` | `Asia-North Europe` | the trade lane the route belongs to |
+| `carrier_code` | `NWL` | carrier or airline code |
+| `carrier_name` | `Northwind Lines` | carrier or airline name |
+| `equipment` | `40HC` | container type; empty for air |
+| `weight_break` | `+100` (air rows) | weight band in kg; empty for ocean |
+| `rate_usd` | `2528.09` | the price in USD |
+| `unit` | `per_container` | `per_container` or `per_kg` |
+
+### `schedules`
+
+| Column | Example | What it is |
+|---|---|---|
+| `schedule_id` | `S-HRZ-CNNGBDEHAM-20261008` | one sailing or flight; `S-` for ocean, `F-` for air |
+| `mode` | `OCEAN` | `OCEAN` or `AIR` |
+| `carrier_code` | `HRZ` | carrier or airline code |
+| `origin` | `CNNGB` | departure port or airport |
+| `destination` | `DEHAM` | arrival port or airport |
+| `trade_lane` | `Asia-North Europe` | the trade lane |
+| `vessel_or_flight` | `Iron Gull` | vessel name, or flight number for air |
+| `planned_departure` | `2026-10-08T12:00:00` | date and time, no time zone |
+| `planned_arrival` | `2026-11-11T12:00:00` | date and time, no time zone |
+| `actual_departure` | `2026-10-10T12:00:00` | date and time, no time zone |
+| `actual_arrival` | `2026-11-13T12:00:00` | date and time, no time zone |
+
+### `bookings`
+
+| Column | Example | What it is |
+|---|---|---|
+| `shipment_id` | `SHP01-20261001-001` | one shipment |
+| `booking_date` | `2026-10-01` | the day it was booked |
+| `shipper_id` | `SHP01` | the shipper's ID |
+| `shipper_name` | `Alpine Outdoor` | the shipper's name |
+| `mode` | `OCEAN` | `OCEAN` or `AIR` |
+| `origin` | `KRPUS` | port or airport code |
+| `destination` | `USLGB` | port or airport code |
+| `trade_lane` | `Transpacific` | the trade lane |
+| `carrier_code` | `ORS` | the carrier the shipper chose |
+| `equipment` | `40DC` | container type; empty for air |
+| `weight_break` | `+1000` (air rows) | weight band in kg; empty for ocean |
+| `quantity` | `5` | number of containers, or kg for air |
+| `unit` | `containers` | `containers` or `kg` |
+| `unit_rate_usd` | `1622.33` | the spot price per container or per kg on the booking day |
+| `total_cost_usd` | `8111.65` | `unit_rate_usd × quantity` |
+| `schedule_id` | `S-ORS-KRPUSUSLGB-20261006` | the sailing or flight it travels on |
 
 A few things to know:
 

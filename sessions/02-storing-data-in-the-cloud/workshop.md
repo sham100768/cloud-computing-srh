@@ -31,7 +31,7 @@ Open the bucket in the console. The `date=` "folders" are just part of each obje
 ## 3. Create the tables with Terraform
 
 ```bash
-cd ~/cloud-computing-srh/sessions/02-cloud-storage-and-bigquery/starter
+cd ~/cloud-computing-srh/sessions/02-storing-data-in-the-cloud/starter
 cp terraform.tfvars.example terraform.tfvars   # set project_id
 terraform init
 terraform plan

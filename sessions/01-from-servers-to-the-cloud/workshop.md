@@ -14,7 +14,7 @@ Open **Cloud Shell** (the `>_` icon, top right of the console). Terraform is alr
 
 ```bash
 git clone https://github.com/sham100768/cloud-computing-srh.git
-cd cloud-computing-srh/sessions/01-cloud-data-architectures-and-gcp-foundations/starter
+cd cloud-computing-srh/sessions/01-from-servers-to-the-cloud/starter
 gcloud config set project YOUR-PROJECT-ID
 cp terraform.tfvars.example terraform.tfvars
 nano terraform.tfvars        # set project_id and neighbour_email, then Ctrl+O, Enter, Ctrl+X

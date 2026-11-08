@@ -8,7 +8,7 @@ Sessions run 16:30–19:00 in seminar room 1.4.
 1. Read the [course overview](COURSE_OVERVIEW.md)
 2. [Set up Google Cloud](setup/gcp.md)
 3. [Set up Databricks Free Edition](setup/databricks.md)
-4. Fork this repo into your team's repo once teams form in session 4.
+4. Fork this repo in session 3: your fork holds your own design. In session 4 your team picks one member's fork as the team repo and adds the other two as collaborators.
 
 ## Schedule
 | # | Date | Session |

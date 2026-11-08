@@ -79,6 +79,12 @@ Look at your answers to 2 and 3 together. What would you tell a shipper choosing
 - **Lifecycle rule.** In session 1's `main.tf`, add a `lifecycle_rule` to the raw bucket that moves objects to `NEARLINE` after 30 days. Run `terraform plan` in the session 1 folder: why does Terraform change the existing bucket instead of creating a new one?
 - **Join.** Using `bookings.schedule_id` and `schedules.schedule_id`, find each shipper's share of shipments that arrived late.
 - **Formats.** Export `rates` to Parquet in your bucket with `bq extract --destination_format=PARQUET`, and compare its size with the CSVs.
+- **A dashboard for a real user.** Pick one shipper from `bookings`. You're their procurement manager, and before next quarter's carrier negotiations you want one page that answers:
+  - Where is our freight money going?
+  - Are we paying more than we need to?
+  - Can we trust the carriers we book?
+
+  Build it in [Data Studio](https://datastudio.google.com) (formerly Looker Studio): free, in the browser, and it reads your BigQuery tables directly. Deciding which tables, columns and charts answer each question is the task. If a measure you need isn't in the data, create it. Then open **Job history** in BigQuery and find the queries your dashboard ran: every chart queries on every refresh. What would make your page cheaper to run?
 
 ## Teardown
 

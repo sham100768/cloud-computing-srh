@@ -42,9 +42,14 @@ Hand-in: one GitHub repo per team with README, code and Terraform, a report of m
 - `event-generator/`: synthetic freight data (batch files and live events). Deterministic with seed 42, so every student gets identical data. Keep its tests passing: `python3 -m unittest`.
 - `architecture/`: reference architecture.
 
+## Handover between Claude chat and Claude Code
+- Claude chat plans from the repo as it is on GitHub `main` (public: https://github.com/sham100768/cloud-computing-srh), not from older copies of files or decks. When chat drafts a deck, it starts from the `.pptx` in the repo.
+- A brief from chat says: which session or files, what to change, and anything that must not change. Decks arrive as a file in `~/Downloads`; Claude Code checks them against the repo version and re-applies any fixes the draft is missing.
+- Claude Code replies with the PR link, what changed, and anything it changed beyond the brief or couldn't check (for example how a slide renders). Paste that back into chat.
+- When this file changes, the repo copy wins. Chat should re-read it from GitHub rather than keep its own version.
+
 ## Known updates still to make
-- README "Start here" step 4 says teams form in session 3: change to session 4.
-- `COURSE_OVERVIEW.md` says teams form in session 3: change to session 4, and note week 1 is individual.
+- None open.
 
 ## Conventions
 - Workshop guides: core task, checkpoint, stretch, teardown, "if something goes wrong".

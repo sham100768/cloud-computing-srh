@@ -59,7 +59,9 @@ Session-by-session dates and materials are in the [README](README.md). Week 3 ha
 
 ## The project
 
-You work in teams of three, formed in session 3. Each team gets its own shipper to serve, with its own targets for data freshness, accuracy and cost, so no two teams build exactly the same thing.
+Week 1 (sessions 1 to 3) is individual: you each build in your own Google Cloud project. In session 3 you get one of seven shippers to serve, each with its own targets for data freshness, accuracy and cost. Three of you share each shipper.
+
+Teams of three form in session 4: the three students with the same shipper. Your first task as a team is to compare your three designs and agree on one, then pick one member's project as production. No two teams build exactly the same thing.
 
 The project grows out of the workshops. Each session adds a layer, so by the end of week 4 your team has a deployed platform. Along the way, expect a few real-world surprises.
 

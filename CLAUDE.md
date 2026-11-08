@@ -31,7 +31,7 @@ Hand-in: one GitHub repo per team with README, code and Terraform, a report of m
 - `README.md`, `COURSE_OVERVIEW.md`: entry points for students.
 - `setup/`: GCP and Databricks guides.
 - `sessions/NN-<slug>/`: `README.md` (title, one-line subtitle, date, Goals, Materials), `workshop.md`, `notes.md`, `slides/` (the exported `.pptx`, named `session-NN-<slug>.pptx`), `starter/`.
-- Folder slugs follow the session title. Current: `01-cloud-architecture-and-gcp-fundamentals`, `02-storing-data-in-the-cloud`, `03-architecture-patterns-lambda-vs-kappa`, then 04 to 15 as in the README schedule. When a title changes, rename the folder and update every link to it.
+- Folder slugs follow the session title. Current: `01-cloud-architecture-and-gcp-fundamentals`, `02-storing-data-in-the-cloud`, `03-batch-streams-and-architecture-patterns`, then 04 to 15 as in the README schedule. When a title changes, rename the folder and update every link to it.
 - `project/`: brief, report template, marking, prompts folder.
 - `event-generator/`: synthetic freight data (batch files and live events). Deterministic with seed 42, so every student gets identical data. Keep its tests passing: `python3 -m unittest`.
 - `architecture/`: reference architecture.

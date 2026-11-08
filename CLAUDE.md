@@ -10,8 +10,8 @@ This is the public student repo for **Cloud Computing and Data Architectures**, 
 
 ## Never commit
 - Answers, solutions or expected results (instructor material lives outside the repo). Sanity checks are fine, such as the row counts that confirm a load worked (14,136 rates, 1,140 bookings, 1,261 schedules). Results that answer a task are not.
-- The evolution brief, the mid-module twist, or the failure test before they're released in class.
-- Marking moderation details, emails with SRH staff, or personal contact details.
+- Any assessment material before Shyam releases it in class. If a brief mentions something not yet released, ask before committing it.
+- Internal marking notes, correspondence, or personal contact details.
 - Terraform state, `terraform.tfvars`, service account keys, generated data (`data/`, `freight-data/`, `events.jsonl`).
 
 ## Module facts
@@ -22,14 +22,8 @@ This is the public student repo for **Cloud Computing and Data Architectures**, 
 - **Week 1 (sessions 1-3) is individual.** In session 3 each student gets one of seven shipper profiles; three students share each profile.
 - **Teams of three form in session 4**: the three students with the same shipper profile. Their first task is to compare their three designs and agree on one. Each team picks one member's project as production.
 
-## Assessment (as approved)
-| Component | Weight |
-|---|---|
-| Attendance | 10% |
-| Workshop checkpoints | 10% |
-| Team project: build 30%, redesign 15% | 45% |
-| Peer rating by other teams at the board | 10% |
-| Individual performance at the board | 25% |
+## Assessment
+Marking lives in project/marking.md, which is the source of truth. Checkpoints are signposts, not marked.
 
 Hand-in: one GitHub repo per team with README, code and Terraform, a report of max 4 pages (template in `project/`), a `prompts/` folder, and a contribution statement. AI use is allowed if students can explain everything they submit.
 

@@ -86,10 +86,9 @@ Each team gets 30 minutes: a live demo of your platform, your redesign pitch, an
 | Component | Weight | Individual or team |
 | --- | --- | --- |
 | Attendance | 10% | Individual |
-| Workshop checkpoints | 10% | Individual |
 | Team project (build and redesign) | 45% | Team |
 | Peer rating: the other teams score each presentation at the board | 10% | Team |
-| Performance at the board: questions on your part and your AI use | 25% | Individual |
+| Performance at the board: questions on your part and your AI use | 35% | Individual |
 
 There is no written exam. Details are in [project/marking.md](project/marking.md).
 

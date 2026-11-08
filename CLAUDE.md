@@ -9,7 +9,7 @@ This is the public student repo for **Cloud Computing and Data Architectures**, 
 - When a brief conflicts with this file, stop and ask.
 
 ## Never commit
-- Answers, solutions or expected results (instructor material lives outside the repo).
+- Answers, solutions or expected results (instructor material lives outside the repo). Sanity checks are fine, such as the row counts that confirm a load worked (14,136 rates, 1,140 bookings, 1,261 schedules). Results that answer a task are not.
 - The evolution brief, the mid-module twist, or the failure test before they're released in class.
 - Marking moderation details, emails with SRH staff, or personal contact details.
 - Terraform state, `terraform.tfvars`, service account keys, generated data (`data/`, `freight-data/`, `events.jsonl`).

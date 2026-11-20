@@ -60,6 +60,21 @@ Copy the [ADR template](../../project/adr-template.md) to `docs/adr/001-<slug>.m
 
 Either answer can be right. What matters is that your reasons come from your launch customer's targets and your evidence.
 
+Three questions help you decide:
+
+1. **Freshness.** Does your launch customer need a live path at all? An hour can be met by loading files often. 60 seconds can't.
+2. **Sources.** Rates and schedules arrive as daily files, and tracking arrives as events. Mixed sources point to Lambda. Kappa only fits if everything can be treated as an event.
+3. **Budget.** $20 to $60 a month is tight. Check what an always-on service, such as a Kafka cluster or a streaming Dataflow job, would cost in the [pricing calculator](https://cloud.google.com/products/calculator) before you choose it. Pub/Sub writing straight into BigQuery is a cheap live path.
+
+A strong ADR has:
+
+- your launch customer's three targets, and real numbers from `docs/metrics.md`;
+- both options, applied to your launch customer rather than in general;
+- a rough monthly cost;
+- at least one honest downside of the option you chose.
+
+"Kappa is more modern" or "Lambda is more complete" isn't a reason on its own. Tie every reason to a target or a number.
+
 Save your work. `git add -A` takes everything you've changed, including your `schedules` table from Wednesday and today's SQL, not just `docs`. Your Terraform state and `terraform.tfvars` stay out: `.gitignore` excludes them.
 
 ```bash

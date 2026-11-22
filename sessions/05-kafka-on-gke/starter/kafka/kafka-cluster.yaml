@@ -55,11 +55,6 @@ spec:
       offsets.topic.replication.factor: 3
       transaction.state.log.replication.factor: 3
       transaction.state.log.min.isr: 2
-    # By default Strimzi lets only one broker be evicted at a time. All three
-    # share one node, so scaling to zero has to evict them together.
-    template:
-      podDisruptionBudget:
-        maxUnavailable: 3
   entityOperator:
     # Turns KafkaTopic resources into real topics.
     topicOperator:

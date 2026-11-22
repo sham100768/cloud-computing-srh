@@ -14,5 +14,9 @@ curl -sSL "$URL" \
   | sed 's/namespace: myproject/namespace: kafka/' \
   | kubectl apply --server-side --force-conflicts -n kafka -f -
 
+# By default Strimzi adds PodDisruptionBudgets that let only one Kafka pod stop
+# at a time. On a one-node cluster they block scaling to zero, so turn them off.
+kubectl -n kafka set env deployment/strimzi-cluster-operator STRIMZI_POD_DISRUPTION_BUDGET_GENERATION=false
+
 kubectl -n kafka rollout status deployment/strimzi-cluster-operator --timeout=300s
 echo "Strimzi ${VERSION} is running in the kafka namespace."

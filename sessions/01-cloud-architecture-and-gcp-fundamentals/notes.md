@@ -13,7 +13,7 @@
 
 ### How the module works
 - Marks: attendance 10%, the project 55% (your platform 40%, your redesign 15%), and you at the architecture board 35%. There's no written exam. Details are in [project/marking.md](../../project/marking.md).
-- Weeks 1 to 4 teach the services and build your platform end to end. On Friday 11 December you get a brief that changes the requirements, and you redesign your platform for it. You present it at the board on 16 or 18 December.
+- Weeks 1 to 4 teach the services and build your platform end to end. On Wednesday 9 December you get a brief that changes the requirements, and you redesign your platform for it. You hand in on Sunday 13 December and present it at the board on 14 or 16 December. (Dates updated after the schedule changed.)
 - On Friday (session 3) each of you gets a shipper: a fictional company with its own priorities, such as cost, how fresh the data is, or reliability. Your designs are judged against those priorities. A design that costs several times more for a shipper focused on cost will count against you.
 - The board works like a real architecture review: you present, the other students on your shipper ask the questions, and you defend your decisions.
 - AI use is encouraged. What's assessed is your judgement and your decisions, so keep a record of how you used AI (see [project/prompts/](../../project/prompts/)).

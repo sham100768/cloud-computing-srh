@@ -22,12 +22,12 @@ Sessions run 16:30–19:00 in seminar room 1.4.
 | 07 | 2026-12-02 | [Dataflow](sessions/07-dataflow) |
 | 08 | 2026-12-03 | [Spark on Dataproc](sessions/08-spark-on-dataproc) |
 | 09 | 2026-12-04 | [Databricks](sessions/09-databricks) |
-| 10 | 2026-12-07 | [Production readiness and CI/CD](sessions/10-production-readiness-and-ci-cd) |
-| 11 | 2026-12-09 | [Project lab](sessions/11-project-lab) |
-| 12 | 2026-12-11 | [Evolution brief](sessions/12-evolution-brief) |
-| 13 | 2026-12-14 | [Redesign lab](sessions/13-redesign-lab) |
-| 14 | 2026-12-16 | [Architecture board: shippers 1-4](sessions/14-architecture-board-shippers-1-4) |
-| 15 | 2026-12-18 | [Architecture board: shippers 5-7](sessions/15-architecture-board-shippers-5-7) |
+| 10 | 2026-12-07 | [Production readiness and project lab](sessions/10-production-readiness-and-project-lab) |
+| 11 | 2026-12-09 | [Evolution brief](sessions/11-evolution-brief) |
+| 12 | 2026-12-11 | [Redesign lab](sessions/12-redesign-lab) |
+| 13 | 2026-12-14 | [Architecture board: shippers 1-4](sessions/13-architecture-board-shippers-1-4) |
+| 14 | 2026-12-16 | [Architecture board: shippers 5-7](sessions/14-architecture-board-shippers-5-7) |
+| 15 | 2026-12-18 | [Recap and AI foundations](sessions/15-recap-and-ai-foundations) |
 
 ## Repo layout
 - `setup/` — account setup guides

@@ -4,4 +4,4 @@ You work for a company that sells freight analytics to shippers moving goods by 
 
 The project is individual. In session 3 each student gets a launch customer: one of seven shippers, the platform's first big contract. Its service-level targets are what the company promised, so your version of the platform is shaped by them. Three students share each launch customer, but each builds their own design.
 
-Due: Tuesday 15 December, in your fork of the course repo.
+Due: Sunday 13 December, in your fork of the course repo.

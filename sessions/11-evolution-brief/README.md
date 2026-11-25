@@ -1,5 +1,5 @@
-# Session 15: Architecture board: shippers 5-7
-**Date:** 2026-12-18, 16:30–19:00
+# Session 11: Evolution brief
+**Date:** 2026-12-09, 16:30–19:00
 
 ## Goals
 - TODO

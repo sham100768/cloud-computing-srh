@@ -1,4 +1,4 @@
-# Workshop: Project lab
+# Workshop: Recap and AI foundations
 
 ## Core task
 TODO

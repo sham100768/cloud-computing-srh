@@ -1,5 +1,7 @@
 # Workshop: one table, two ways
 
+> **Work in progress.** This workshop is still being tested, and its steps and starter files may change before the session. Please don't start it early: wait until the session, then pull the final version with `git pull upstream main`.
+
 **Time:** about 80 minutes, on your own, in Cloud Shell, plus 10 minutes at the start of class. You need everything from session 7: the cluster, Kafka with its `vpc` listener, the Dataflow pipeline and the raw archive.
 
 Today you build the executive side's table, **carrier reliability per day**: of the ocean shipments that arrived, how many reported a delay. You build it twice:

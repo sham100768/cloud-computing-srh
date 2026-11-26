@@ -86,75 +86,85 @@ def run(argv=None):
     args, beam_args = parser.parse_known_args(argv)
 
     options = PipelineOptions(beam_args)
-    options.view_as(SetupOptions).save_main_session = False
+    # The lambdas below use functions imported at the top of this file, so the
+    # workers need this file's imports too.
+    options.view_as(SetupOptions).save_main_session = True
     live = args.source == "live"
     options.view_as(StandardOptions).streaming = live
 
-    with beam.Pipeline(options=options) as p:
-        raw = read_events(p, args)
+    p = beam.Pipeline(options=options)
+    raw = read_events(p, args)
 
-        # The raw archive: every message exactly as it arrived, good or bad,
-        # in files per 5 minutes of arrival. This is your lake: whatever the
-        # pipeline gets wrong today, the original messages are still here.
-        archive_lines = raw | "As text" >> beam.Map(
-            lambda m: m.decode("utf-8", errors="replace") if isinstance(m, bytes) else m)
-        if live:
-            # A file has no arrival times, so only a live stream gets 5-minute files.
-            archive_lines = archive_lines | "Archive windows" >> beam.WindowInto(window.FixedWindows(WINDOW_SECONDS))
+    # The raw archive: every message exactly as it arrived, good or bad,
+    # in files per 5 minutes of arrival. This is your lake: whatever the
+    # pipeline gets wrong today, the original messages are still here.
+    archive_lines = raw | "As text" >> beam.Map(
+        lambda m: m.decode("utf-8", errors="replace") if isinstance(m, bytes) else m)
+    if live:
+        # A file has no arrival times, so only a live stream gets 5-minute files.
+        archive_lines = archive_lines | "Archive windows" >> beam.WindowInto(window.FixedWindows(WINDOW_SECONDS))
 
-        keyed = (
-            raw
-            | "Parse" >> beam.Map(parse_event)
-            | "Drop bad messages" >> beam.Filter(lambda event: event is not None)
-            | "Key by dedupe key" >> beam.Map(lambda event: (dedupe_key(event), event))
+    keyed = (
+        raw
+        | "Parse" >> beam.Map(parse_event)
+        | "Drop bad messages" >> beam.Filter(lambda event: event is not None)
+        | "Key by dedupe key" >> beam.Map(lambda event: (dedupe_key(event), event))
+    )
+    if live:
+        # Keep the first event per key, and forget the key after 10 minutes.
+        unique = keyed | "Drop duplicates" >> DeduplicatePerKey(processing_time_duration=DEDUPE_FOR) | beam.Values()
+    else:
+        # A file has an end, so group everything by key and keep one.
+        unique = keyed | "Group duplicates" >> beam.GroupByKey() | "Keep one" >> beam.Map(lambda kv: list(kv[1])[0])
+    # From here on, Beam knows each event by the time it happened.
+    events = unique | "Event time" >> beam.Map(lambda event: window.TimestampedValue(event, event_timestamp(event)))
+
+    # 1. Every event, as it arrives: the ops view reads this.
+    live_rows = events | "Live row" >> beam.Map(to_live_row)
+
+    # 2. Departures per port, per 5-minute window of event time. A window
+    #    is counted once the watermark passes its end.
+    departures = (
+        events
+        | "Departures only" >> beam.Filter(lambda event: event["event_type"] == "DEPARTED")
+        | "Departure windows" >> beam.WindowInto(window.FixedWindows(WINDOW_SECONDS))
+        | "Port" >> beam.Map(lambda event: (event["location"], 1))
+        | "Count per port" >> beam.CombinePerKey(sum)
+        | "Departure row" >> beam.Map(
+            lambda kv, w=beam.DoFn.WindowParam: departure_row(kv[0], kv[1], *window_bounds(w)))
+    )
+
+    if live:
+        bq = dict(
+            create_disposition=beam.io.BigQueryDisposition.CREATE_NEVER,
+            write_disposition=beam.io.BigQueryDisposition.WRITE_APPEND,
+            method=beam.io.WriteToBigQuery.Method.STREAMING_INSERTS,
         )
-        if live:
-            # Keep the first event per key, and forget the key after 10 minutes.
-            unique = keyed | "Drop duplicates" >> DeduplicatePerKey(processing_time_duration=DEDUPE_FOR) | beam.Values()
-        else:
-            # A file has an end, so group everything by key and keep one.
-            unique = keyed | "Group duplicates" >> beam.GroupByKey() | "Keep one" >> beam.Map(lambda kv: list(kv[1])[0])
-        # From here on, Beam knows each event by the time it happened.
-        events = unique | "Event time" >> beam.Map(lambda event: window.TimestampedValue(event, event_timestamp(event)))
+        live_rows | "Write live_events" >> beam.io.WriteToBigQuery(
+            f"{args.dataset}.live_events", schema=LIVE_SCHEMA, **bq)
+        departures | "Write departures_by_port" >> beam.io.WriteToBigQuery(
+            f"{args.dataset}.departures_by_port", schema=DEPARTURES_SCHEMA, **bq)
+        archive_path = args.archive
+    else:
+        live_rows | "Count live rows" >> beam.combiners.Count.Globally() | "Print count" >> beam.Map(
+            lambda n: print(f"live_events: {n} rows"))
+        departures | "Print departures" >> beam.Map(
+            lambda row: print(f"departures {row['window_start'][11:16]} {row['port']}: {row['departures']}"))
+        archive_path = args.out
 
-        # 1. Every event, as it arrives: the ops view reads this.
-        live_rows = events | "Live row" >> beam.Map(to_live_row)
+    archive_lines | "Write archive" >> fileio.WriteToFiles(
+        path=archive_path,
+        file_naming=fileio.default_file_naming(prefix="events", suffix=".jsonl"),
+        shards=1,
+    )
 
-        # 2. Departures per port, per 5-minute window of event time. A window
-        #    is counted once the watermark passes its end.
-        departures = (
-            events
-            | "Departures only" >> beam.Filter(lambda event: event["event_type"] == "DEPARTED")
-            | "Departure windows" >> beam.WindowInto(window.FixedWindows(WINDOW_SECONDS))
-            | "Port" >> beam.Map(lambda event: (event["location"], 1))
-            | "Count per port" >> beam.CombinePerKey(sum)
-            | "Departure row" >> beam.Map(
-                lambda kv, w=beam.DoFn.WindowParam: departure_row(kv[0], kv[1], *window_bounds(w)))
-        )
-
-        if live:
-            bq = dict(
-                create_disposition=beam.io.BigQueryDisposition.CREATE_NEVER,
-                write_disposition=beam.io.BigQueryDisposition.WRITE_APPEND,
-                method=beam.io.WriteToBigQuery.Method.STREAMING_INSERTS,
-            )
-            live_rows | "Write live_events" >> beam.io.WriteToBigQuery(
-                f"{args.dataset}.live_events", schema=LIVE_SCHEMA, **bq)
-            departures | "Write departures_by_port" >> beam.io.WriteToBigQuery(
-                f"{args.dataset}.departures_by_port", schema=DEPARTURES_SCHEMA, **bq)
-            archive_path = args.archive
-        else:
-            live_rows | "Count live rows" >> beam.combiners.Count.Globally() | "Print count" >> beam.Map(
-                lambda n: print(f"live_events: {n} rows"))
-            departures | "Print departures" >> beam.Map(
-                lambda row: print(f"departures {row['window_start'][11:16]} {row['port']}: {row['departures']}"))
-            archive_path = args.out
-
-        archive_lines | "Write archive" >> fileio.WriteToFiles(
-            path=archive_path,
-            file_naming=fileio.default_file_naming(prefix="events", suffix=".jsonl"),
-            shards=1,
-        )
+    result = p.run()
+    if live:
+        # A streaming job never finishes, so don't wait for it: it keeps running on
+        # Dataflow after this script ends. Drain it when you're done (teardown).
+        print("Submitted. Watch it in the console: Dataflow, Jobs, freight-live.")
+    else:
+        result.wait_until_finish()
 
 
 if __name__ == "__main__":

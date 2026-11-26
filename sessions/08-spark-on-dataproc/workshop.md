@@ -32,6 +32,8 @@ docker tag generator:v3 $REPO/generator:v3
 docker push $REPO/generator:v3
 ```
 
+A working push ends with a line containing `digest:`. If it stops with `connection refused`, run `docker push` again.
+
 Start today's producers, two carrier feeds, once the Kafka pods are Running:
 
 ```bash
@@ -197,6 +199,7 @@ Keep the tables, the archive and the Kafka disks: tomorrow uses them.
 
 ## If something goes wrong
 
+- **Creating the cluster fails with `Permission 'dataproc.nodeGroups.create' denied`:** `terraform apply` only just switched on Dataproc, and its permissions take a few minutes to apply. Delete the failed cluster with `gcloud dataproc clusters delete freight-spark --region europe-west3 --quiet`, wait two minutes, and create it again.
 - **`Insufficient 'CPUS' quota` creating the cluster:** something else is still running. Check `gcloud dataflow jobs list --region europe-west3 --status=active` and drain it.
 - **`run-batch.sh` says the cluster isn't found:** it deleted itself after 30 idle minutes. Create it again.
 - **The job fails with `Permission denied` on BigQuery:** today's `terraform apply` didn't finish, or the cluster was created without `--service-account`.

@@ -1,5 +1,7 @@
 # Workshop: one table, two ways
 
+> **Work in progress.** This workshop is still being tested, and its steps and starter files may change before the session. Please don't start it early: wait until the session, then pull the final version with `git pull upstream main`.
+
 **Time:** about 80 minutes, on your own, in Cloud Shell, plus 10 minutes at the start of class. You need everything from session 7: the cluster, Kafka with its `vpc` listener, the Dataflow pipeline and the raw archive.
 
 Today you build the executive side's table, **carrier reliability per day**: of the ocean shipments that arrived, how many reported a delay. You build it twice:
@@ -31,6 +33,8 @@ docker build -t generator:v3 .
 docker tag generator:v3 $REPO/generator:v3
 docker push $REPO/generator:v3
 ```
+
+A working push ends with a line containing `digest:`. If it stops with `connection refused`, run `docker push` again.
 
 Start today's producers, two carrier feeds, once the Kafka pods are Running:
 
@@ -197,6 +201,7 @@ Keep the tables, the archive and the Kafka disks: tomorrow uses them.
 
 ## If something goes wrong
 
+- **Creating the cluster fails with `Permission 'dataproc.nodeGroups.create' denied`:** `terraform apply` only just switched on Dataproc, and its permissions take a few minutes to apply. Delete the failed cluster with `gcloud dataproc clusters delete freight-spark --region europe-west3 --quiet`, wait two minutes, and create it again.
 - **`Insufficient 'CPUS' quota` creating the cluster:** something else is still running. Check `gcloud dataflow jobs list --region europe-west3 --status=active` and drain it.
 - **`run-batch.sh` says the cluster isn't found:** it deleted itself after 30 idle minutes. Create it again.
 - **The job fails with `Permission denied` on BigQuery:** today's `terraform apply` didn't finish, or the cluster was created without `--service-account`.

@@ -28,6 +28,7 @@ Those two needs pull in different directions: one wants data in seconds, the oth
 - Process data with Spark and PySpark, and use Databricks for analysis and machine learning.
 - Define infrastructure as code with Terraform, and ship changes from development to production.
 - Present technical decisions clearly, and defend them under questioning.
+- Explain where AI fits on a data platform, and build a simple assistant over your own data.
 
 ## How a session works
 
@@ -52,8 +53,8 @@ Each workshop has a **core task** most people finish in class, a **stretch task*
 | 1 (16–20 Nov) | Cloud foundations, storage and BigQuery, architecture patterns |
 | 2 (23–25 Nov) | Docker, Kubernetes and Kafka |
 | 3 (30 Nov–4 Dec) | Streaming with Pub/Sub and Dataflow, Spark on Dataproc, Databricks |
-| 4 (7–11 Dec) | Production readiness and CI/CD, project lab, the evolution brief |
-| 5 (14–18 Dec) | Redesign lab and the architecture board |
+| 4 (7–11 Dec) | Production readiness and project lab, the evolution brief, the redesign lab |
+| 5 (14–18 Dec) | The architecture board, then recap and AI foundations |
 
 Session-by-session dates and materials are in the [README](README.md). Week 3 has four sessions, so plan your time.
 
@@ -63,11 +64,11 @@ The project is individual: you each build your own platform in your own Google C
 
 The project grows out of the workshops. Each session adds a layer. By the end of week 3 you have built both a Lambda and a Kappa version of your platform, and by the end of week 4 a deployed platform. Along the way, expect a few real-world surprises.
 
-At the end of week 4 you receive the **evolution brief**: a new business challenge your platform has to meet. You spend week 5 redesigning it, then present it to the architecture board.
+In week 4 you receive the **evolution brief**: a new business challenge your platform has to meet. You redesign your platform for it before the architecture board at the start of week 5.
 
 ### What you hand in
 
-Everything goes in your fork of this repo, due **Tuesday 15 December**:
+Everything goes in your fork of this repo, due **Sunday 13 December**:
 
 - **A README** that explains your platform and lets someone else run it.
 - **Your code and Terraform.**
@@ -76,7 +77,7 @@ Everything goes in your fork of this repo, due **Tuesday 15 December**:
 
 ### The architecture board
 
-Each of you gets about 10 minutes: a live demo of your platform, your redesign pitch, and questions. Students present grouped by launch customer, shippers 1 to 4 on 16 December and 5 to 7 on 18 December, so the three designs for each customer come back to back. Your board is the other two students with your launch customer, plus me. They already know the customer, so no time goes on context: they ask the questions, and I do the scoring.
+Each of you gets about 10 minutes: a live demo of your platform, your redesign pitch, and questions. Students present grouped by launch customer, shippers 1 to 4 on 14 December and 5 to 7 on 16 December, so the three designs for each customer come back to back. Your board is the other two students with your launch customer, plus me. They already know the customer, so no time goes on context: they ask the questions, and I do the scoring.
 
 ## Assessment
 

@@ -1,5 +1,5 @@
-# Session 13: Redesign lab
-**Date:** 2026-12-14, 16:30–19:00
+# Session 12: Redesign lab
+**Date:** 2026-12-11, 16:30–19:00
 
 ## Goals
 - TODO

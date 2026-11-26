@@ -53,7 +53,7 @@ Each workshop has a **core task** most people finish in class, a **stretch task*
 | 1 (16–20 Nov) | Cloud foundations, storage and BigQuery, architecture patterns |
 | 2 (23–25 Nov) | Docker, Kubernetes and Kafka |
 | 3 (30 Nov–4 Dec) | Streaming with Pub/Sub and Dataflow, Spark on Dataproc, Databricks |
-| 4 (7–11 Dec) | Production readiness and project lab, the evolution brief, the redesign lab |
+| 4 (9–11 Dec) | Production readiness and project lab, the evolution brief, the redesign lab |
 | 5 (14–18 Dec) | The architecture board, then recap and AI foundations |
 
 Session-by-session dates and materials are in the [README](README.md). Week 3 has four sessions, so plan your time.

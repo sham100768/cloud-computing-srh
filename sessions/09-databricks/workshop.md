@@ -1,5 +1,7 @@
 # Workshop: your freight data in a lakehouse
 
+> **Work in progress.** This workshop is still being tested, and its steps and starter files may change before the session. Please don't start it early: wait until the session, then pull the final version with `git pull upstream main`.
+
 **Time:** about 80 minutes, on your own, in Cloud Shell and Databricks Free Edition. You need yesterday's two reliability tables and your raw archive. Nothing on Google Cloud needs to run today: leave the cluster at zero nodes.
 
 Today the same data goes into a different kind of platform. You'll refine your raw events in three stages, bronze, silver and gold, as Delta tables in Databricks; build the reliability table a third time; undo a mistake with time travel; and train a first model.

@@ -20,6 +20,7 @@ The logic in each box lives in transforms.py. That's where your TODOs are.
 
 import argparse
 import logging
+import time
 
 import apache_beam as beam
 from apache_beam.io import fileio
@@ -57,12 +58,17 @@ def read_events(p, args):
                 "auto.offset.reset": args.kafka_offset_reset,
             },
             topics=[args.kafka_topic],
+            # Save the group's position in Kafka as it goes, so a restarted job
+            # carries on where it stopped. A replay doesn't need to.
+            commit_offset_in_finalize=not args.replay,
             # Kafka stamps each record when the producer sends it, which is
             # close to the event time. The watermark follows these stamps.
             timestamp_policy=ReadFromKafka.create_time_policy,
         )
         | "Kafka value" >> beam.Map(lambda record: record[1])  # (key, value) -> value
     )
+    if args.replay:
+        return ocean  # a replay rebuilds from the Kafka log alone
     air = p | "Read Pub/Sub" >> beam.io.ReadFromPubSub(subscription=args.pubsub_subscription)
     return (ocean, air) | "Ocean and air together" >> beam.Flatten()
 
@@ -79,11 +85,18 @@ def run(argv=None):
     parser.add_argument("--kafka-bootstrap")
     parser.add_argument("--kafka-topic", default="ocean-events")
     parser.add_argument("--kafka-group", default="dataflow-live")
-    parser.add_argument("--kafka-offset-reset", default="latest", choices=["latest", "earliest"])
+    # Where a new consumer group starts. A group that has run before carries on
+    # where it stopped, so the archive never misses what Kafka has.
+    parser.add_argument("--kafka-offset-reset", default="earliest", choices=["latest", "earliest"])
     parser.add_argument("--pubsub-subscription", help="projects/<project>/subscriptions/air-events-dataflow")
     parser.add_argument("--dataset", help="<project>:freight")
     parser.add_argument("--archive", help="gs://<project>-raw/events/")
+    parser.add_argument("--replay", action="store_true",
+                        help="read the whole Kafka log again, as a new group, into replay_events only")
     args, beam_args = parser.parse_known_args(argv)
+    if args.replay:
+        args.kafka_group = f"replay-{int(time.time())}"
+        args.kafka_offset_reset = "earliest"
 
     options = PipelineOptions(beam_args)
     # The lambdas below use functions imported at the top of this file, so the
@@ -140,10 +153,15 @@ def run(argv=None):
             write_disposition=beam.io.BigQueryDisposition.WRITE_APPEND,
             method=beam.io.WriteToBigQuery.Method.STREAMING_INSERTS,
         )
-        live_rows | "Write live_events" >> beam.io.WriteToBigQuery(
-            f"{args.dataset}.live_events", schema=LIVE_SCHEMA, **bq)
-        departures | "Write departures_by_port" >> beam.io.WriteToBigQuery(
-            f"{args.dataset}.departures_by_port", schema=DEPARTURES_SCHEMA, **bq)
+        if args.replay:
+            # Same code, same logic, written somewhere new: nothing else changes.
+            live_rows | "Write replay_events" >> beam.io.WriteToBigQuery(
+                f"{args.dataset}.replay_events", schema=LIVE_SCHEMA, **bq)
+        else:
+            live_rows | "Write live_events" >> beam.io.WriteToBigQuery(
+                f"{args.dataset}.live_events", schema=LIVE_SCHEMA, **bq)
+            departures | "Write departures_by_port" >> beam.io.WriteToBigQuery(
+                f"{args.dataset}.departures_by_port", schema=DEPARTURES_SCHEMA, **bq)
         archive_path = args.archive
     else:
         live_rows | "Count live rows" >> beam.combiners.Count.Globally() | "Print count" >> beam.Map(
@@ -152,17 +170,18 @@ def run(argv=None):
             lambda row: print(f"departures {row['window_start'][11:16]} {row['port']}: {row['departures']}"))
         archive_path = args.out
 
-    archive_lines | "Write archive" >> fileio.WriteToFiles(
-        path=archive_path,
-        file_naming=fileio.default_file_naming(prefix="events", suffix=".jsonl"),
-        shards=1,
-    )
+    if not args.replay:
+        archive_lines | "Write archive" >> fileio.WriteToFiles(
+            path=archive_path,
+            file_naming=fileio.default_file_naming(prefix="events", suffix=".jsonl"),
+            shards=1,
+        )
 
     result = p.run()
     if live:
         # A streaming job never finishes, so don't wait for it: it keeps running on
         # Dataflow after this script ends. Drain it when you're done (teardown).
-        print("Submitted. Watch it in the console: Dataflow, Jobs, freight-live.")
+        print("Submitted. Watch it in the console: Dataflow, Jobs.")
     else:
         result.wait_until_finish()
 

@@ -108,6 +108,17 @@ class StreamTests(unittest.TestCase):
         events = self.take(EventStream(mode="air", seed=7, clock=fixed_clock), 100)
         self.assertTrue(all(e["mode"] == "AIR" for e in events))
 
+    def test_two_runs_never_share_shipment_ids(self):
+        one, two = EventStream(mode="ocean"), EventStream(mode="ocean")
+        first = {next(one)["shipment_id"] for _ in range(200)}
+        second = {next(two)["shipment_id"] for _ in range(200)}
+        self.assertFalse(first & second)
+
+    def test_a_seed_still_gives_the_same_ids(self):
+        one, two = EventStream(mode="ocean", seed=3), EventStream(mode="ocean", seed=3)
+        self.assertEqual([e["shipment_id"] for e in self.take(one, 50)],
+                         [e["shipment_id"] for e in self.take(two, 50)])
+
 
 if __name__ == "__main__":
     unittest.main()

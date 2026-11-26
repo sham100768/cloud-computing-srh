@@ -176,7 +176,7 @@ python3 -m generator stream --sink stdout --rate 2 --count 20
 This prints 20 events, two per second. An event looks like this:
 
 ```json
-{"schema_version": 1, "event_id": "0994940e-...", "shipment_id": "LIVE-SHP06-000050",
+{"schema_version": 1, "event_id": "0994940e-...", "shipment_id": "LIVE-SHP06-9e3779-000050",
  "shipper_id": "SHP06", "mode": "OCEAN", "event_type": "DEPARTED",
  "event_time": "2026-11-30T16:45:02+00:00", "location": "DEHAM", "carrier": "BLC",
  "origin": "DEHAM", "destination": "USNYC", "trade_lane": "Transatlantic"}

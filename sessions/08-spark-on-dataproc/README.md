@@ -3,10 +3,10 @@
 
 ## Goals
 By the end of this session you can:
-- **Lambda:** build the batch path, from raw files through Dataproc to curated BigQuery tables.
-- **Kappa:** rebuild the same curated table with no batch job, by replaying the Kafka log through your streaming pipeline.
-- Compare the two results.
-- TODO: the rest of this session's goals.
+- Explain how Spark splits work across machines, and why a shuffle is where the time goes.
+- Run a Spark batch job on Dataproc over the raw archive: the batch layer of your Lambda version.
+- Rebuild the same table the Kappa way, by replaying the Kafka log through your streaming pipeline.
+- Compare the two on time, cost, code and correctness, for your launch customer.
 
 ## Materials
 - [Slides](slides/)

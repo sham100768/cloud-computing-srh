@@ -1,0 +1,100 @@
+# Today's traffic: two carrier feeds into ocean-events.
+# 1. The feed you've had since session 5, on today's generator image.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ocean-producer
+  namespace: kafka
+  labels:
+    app: ocean-producer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ocean-producer
+  template:
+    metadata:
+      labels:
+        app: ocean-producer
+    spec:
+      containers:
+        - name: generator
+          image: europe-west3-docker.pkg.dev/PROJECT_ID/freight/generator:v3
+          args: ["stream"]
+          env:
+            - name: SINK
+              value: kafka
+            - name: MODE
+              value: ocean
+            - name: RATE
+              value: "2"
+            - name: KAFKA_BOOTSTRAP
+              value: freight-kafka-bootstrap:9092
+            - name: KAFKA_TOPIC
+              value: ocean-events
+            - name: PYTHONUNBUFFERED
+              value: "1"
+          resources:
+            requests:
+              cpu: 50m
+              memory: 96Mi
+            limits:
+              cpu: 250m
+              memory: 192Mi
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+---
+# 2. A second carrier's feed, onboarded this week.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: partner-feed
+  namespace: kafka
+  labels:
+    app: partner-feed
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: partner-feed
+  template:
+    metadata:
+      labels:
+        app: partner-feed
+    spec:
+      containers:
+        - name: generator
+          image: europe-west3-docker.pkg.dev/PROJECT_ID/freight/generator:v3
+          args: ["stream"]
+          env:
+            - name: SINK
+              value: kafka
+            - name: MODE
+              value: ocean
+            - name: RATE
+              value: "1"
+            - name: SCHEMA
+              value: v2
+            - name: LATE
+              value: "0.05"
+            - name: DUPLICATES
+              value: "0.05"
+            - name: KAFKA_BOOTSTRAP
+              value: freight-kafka-bootstrap:9092
+            - name: KAFKA_TOPIC
+              value: ocean-events
+            - name: PYTHONUNBUFFERED
+              value: "1"
+          resources:
+            requests:
+              cpu: 50m
+              memory: 96Mi
+            limits:
+              cpu: 250m
+              memory: 192Mi
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false

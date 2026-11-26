@@ -99,6 +99,8 @@ The script finds Kafka's internal address, then launches the job with one `e2-st
 
 Open **Dataflow → Jobs → freight-live** in the console. The graph is the same one you read in step 3, box for box. It takes 3 to 5 minutes before the worker starts and the boxes show elements going through.
 
+The first time it runs, its consumer group is new, so it starts at the beginning of the Kafka log: everything since Wednesday's workshop goes through first, then it keeps up with new events. That's a replay, and it's what Kafka's log is for. Next time the job starts, the group carries on where it stopped.
+
 ## 6. Feed it and query it (10 min)
 
 Ocean events are already flowing: Wednesday's producer started again with the cluster. Check it:
@@ -119,6 +121,7 @@ Then query the live tables in the BigQuery console:
 
 ```sql
 -- How fresh is the live table? Compare with your launch customer's target.
+-- Right after launch it's catching up on the log, so give it a few minutes.
 SELECT TIMESTAMP_DIFF(CURRENT_TIMESTAMP(), MAX(event_time), SECOND) AS seconds_behind
 FROM freight.live_events;
 

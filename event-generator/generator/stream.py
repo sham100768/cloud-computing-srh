@@ -6,6 +6,7 @@ late arrivals, and a schema change.
 """
 
 import random
+import secrets
 import uuid
 from datetime import datetime, timedelta, timezone
 
@@ -36,6 +37,9 @@ class EventStream:
         self.shipments = []
         self.late_buffer = []
         self.counter = 0
+        # A short ID for this run of the generator, so two producers, or one
+        # restarted, never reuse each other's shipment IDs. Fixed for a seed.
+        self.run_id = f"{seed * 2654435761 % 0x1000000:06x}" if seed is not None else secrets.token_hex(3)
         self.last_event = None
 
     def _new_shipment(self):
@@ -50,7 +54,7 @@ class EventStream:
             carrier = r.choice(ref.AIRLINES)
         self.counter += 1
         return {
-            "shipment_id": f"LIVE-{shipper[0]}-{self.counter:06d}",
+            "shipment_id": f"LIVE-{shipper[0]}-{self.run_id}-{self.counter:06d}",
             "shipper_id": shipper[0], "mode": mode, "origin": origin,
             "destination": destination, "trade_lane": trade_lane,
             "carrier": carrier[0], "reliability": carrier[3], "step": 0,

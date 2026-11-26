@@ -1,5 +1,5 @@
 # Session 10: Production readiness and project lab
-**Date:** 2026-12-07, 16:30–19:00
+**Date:** 2026-12-09, 16:30–19:00
 
 ## Goals
 - Ship a change to your platform through a CI pipeline, with Terraform for everything you've built.

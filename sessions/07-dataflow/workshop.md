@@ -38,7 +38,7 @@ In a second tab. Beam is a big install, so start it now:
 cd ~/cloud-computing-srh/sessions/07-dataflow/starter/pipeline
 python3 -m venv ~/beam
 source ~/beam/bin/activate
-pip install -r requirements.txt               # 3 to 5 minutes
+pip install -r requirements.txt               # 1 to 2 minutes
 ```
 
 While that runs, in a third tab, apply today's Terraform:
@@ -95,7 +95,7 @@ It prints how many events reached `live_events`, then departures per port per 5-
 ./run-on-dataflow.sh
 ```
 
-The script finds Kafka's internal address, then launches the job with one `e2-standard-2` worker. Launching takes a minute or two. The first time, it also downloads Kafka's connector, which runs in Java: that's normal.
+The script finds Kafka's internal address, then launches the job with one `e2-standard-2` worker. Launching takes about 4 minutes: it packages your code, uploads it and hands the job to Dataflow, then prints `Submitted` and gives you the prompt back. The job keeps running on Dataflow after that. The first time, it also downloads Kafka's connector, which runs in Java: that's normal.
 
 Open **Dataflow → Jobs → freight-live** in the console. The graph is the same one you read in step 3, box for box. It takes 3 to 5 minutes before the worker starts and the boxes show elements going through.
 
@@ -139,7 +139,7 @@ ORDER BY window_start DESC, departures DESC
 LIMIT 20;
 ```
 
-`departures_by_port` fills more slowly than `live_events`: a window is only written once the watermark has passed its end.
+`departures_by_port` fills much more slowly than `live_events`: a window is only written once the watermark has passed its end. Expect the first rows about 15 minutes after launch. The pipeline remembers each event ID for 10 minutes to catch duplicates, and the watermark waits for that memory too.
 
 ## 7. Read the watermark (5 min)
 
@@ -158,7 +158,7 @@ gcloud storage ls gs://$PROJECT_ID-raw/events/ | head
 gcloud storage cat $(gcloud storage ls gs://$PROJECT_ID-raw/events/ | head -1) | head -2
 ```
 
-One file per 5 minutes of arrival, one message per line, exactly as it came in: duplicates and broken lines included. This is your lake. Whatever the pipeline drops or gets wrong, the original messages are still here, and tomorrow's Spark job reads them.
+A few files per 5 minutes of arrival, one message per line, exactly as it came in: duplicates and broken lines included. This is your lake. Whatever the pipeline drops or gets wrong, the original messages are still here, and tomorrow's Spark job reads them.
 
 ## Checkpoint
 
@@ -197,7 +197,7 @@ cd ~/cloud-computing-srh/sessions/04-docker-and-kubernetes-on-gke/starter
 terraform apply -var node_count=0
 ```
 
-Draining takes a few minutes. Check that nothing is still running before you leave:
+Draining takes 10 to 15 minutes, because the job finishes its open windows and its 10-minute duplicate check first. Check that nothing is still running before you leave:
 
 ```bash
 gcloud dataflow jobs list --region europe-west3 --status=active
@@ -208,10 +208,11 @@ Both should be empty. Keep today's tables, subscription and archive: tomorrow us
 
 ## If something goes wrong
 
+- **`run-on-dataflow.sh` fails on `setup.py sdist`, or says there's no module named `setuptools`:** run `pip install -r requirements.txt` again in the active environment; it installs `setuptools`.
 - **`pip install` fails on a package with no wheel:** check `python3 --version`. Beam needs Python 3.9 to 3.12. If Cloud Shell's is newer, create the environment with `python3.12 -m venv ~/beam` instead.
 - **`open-kafka-to-vpc.sh` times out:** read the operator's log, `kubectl -n kafka logs deployment/strimzi-cluster-operator --tail=50`. Run the script again: it doesn't add the listener twice.
 - **`run-on-dataflow.sh` says Kafka has no vpc listener:** run `open-kafka-to-vpc.sh` first, and wait until it prints the address.
 - **Launching fails on `java` or the expansion service:** check `java -version`. Kafka's connector runs in Java, and Cloud Shell has it; on your own laptop you need Java 11 or newer.
 - **The job is running but `live_events` stays empty:** open the job's **Logs**. A timeout to Kafka means the worker can't reach the node: check the firewall rule exists with `gcloud compute firewall-rules list`. `PermissionDenied` on BigQuery means today's `terraform apply` didn't finish.
 - **Quota exceeded for CPUS:** the trial allows about 8 vCPUs in Frankfurt. Your node uses 4 and the worker 2. Check `gcloud compute instances list` for anything else.
-- **`departures_by_port` is empty but `live_events` isn't:** wait 5 to 10 minutes. A window is written only after the watermark passes its end.
+- **`departures_by_port` is empty but `live_events` isn't:** wait 15 minutes from launch. A window is written only after the watermark passes its end, and the watermark waits for the 10-minute duplicate check.

@@ -1,2 +1,4 @@
 apache-beam[gcp]==2.61.0
 pytest==8.3.4
+# Python 3.12 venvs no longer include it, and Beam needs it to package transforms.py for Dataflow.
+setuptools

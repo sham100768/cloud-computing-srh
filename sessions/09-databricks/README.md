@@ -3,8 +3,12 @@
 
 ## Goals
 By the end of this session you can:
-- Run both versions of your platform, Lambda and Kappa, side by side by the end of week 3.
-- TODO: the rest of this session's goals.
+- Explain what a lakehouse is, and how it differs from the warehouse and the lake you built in session 2.
+- Refine raw events into bronze, silver and gold Delta tables, and use a table's history to undo a mistake.
+- Train a first model on your freight data, keep track of it with MLflow, and judge whether it's any good.
+- Say where Databricks would and wouldn't fit your launch customer, next to BigQuery.
+
+By the end of week 3 you have both your Lambda and Kappa versions running, and a written comparison.
 
 ## Materials
 - [Slides](slides/)
